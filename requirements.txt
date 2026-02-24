@@ -1,12 +1,14 @@
 fastapi
 uvicorn
-langchain
+langchain>=0.2.2
 langgraph
-langchain-community
+langchain-community>=0.2.2
 langchain-groq
+langchain-huggingface
 faiss-cpu
 sentence-transformers
 pypdf
 pytesseract
 pdf2image
 python-dotenv
+pydantic
