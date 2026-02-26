@@ -1,41 +1,65 @@
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
-from pydantic import BaseModel
+import streamlit as st
 from langchain_core.messages import HumanMessage
 from rag_agent import graph
-import os
 
-app = FastAPI(title="Farmer RAG Agent", description="AI-powered agricultural advisory system")
-
-# Add CORS middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+# Page configuration
+st.set_page_config(
+    page_title="Farmer RAG Agent",
+    page_icon="🌾",
+    layout="wide",
+    initial_sidebar_state="collapsed"
 )
 
-# Mount static files
-app.mount("/static", StaticFiles(directory="static"), name="static")
-
-class Query(BaseModel):
-    question: str
-
-@app.get("/")
-def root():
-    """Serve the main chat interface"""
-    return FileResponse("static/index.html")
-
-@app.post("/ask")
-def ask(q: Query):
-    """Ask a farming question and get AI-powered answers from agricultural documents"""
-    result = graph.invoke({
-        "messages": [HumanMessage(content=q.question)]
-    })
-
-    return {
-        "answer": result["messages"][-1].content
+# Custom styling
+st.markdown("""
+    <style>
+    .main {
+        padding: 2rem;
     }
+    .stChatMessage {
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+# Header
+st.title("🌾 Farmer RAG Agent")
+st.markdown("*Your AI-Powered Agricultural Advisory Assistant*")
+st.divider()
+
+# Initialize session state for chat history
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+# Display chat history
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
+
+# Chat input
+if prompt := st.chat_input("Ask me anything about farming, agriculture, and crop management..."):
+    # Add user message to history
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    
+    # Display user message
+    with st.chat_message("user"):
+        st.markdown(prompt)
+    
+    # Get AI response
+    with st.chat_message("assistant"):
+        with st.spinner("🤔 Thinking..."):
+            try:
+                result = graph.invoke({
+                    "messages": [HumanMessage(content=prompt)]
+                })
+                response = result["messages"][-1].content
+                st.markdown(response)
+                
+                # Add assistant message to history
+                st.session_state.messages.append({"role": "assistant", "content": response})
+            except Exception as e:
+                st.error(f"Error: {str(e)}")
+                error_msg = f"Sorry, there was an error processing your question: {str(e)}"
+                st.session_state.messages.append({"role": "assistant", "content": error_msg})
