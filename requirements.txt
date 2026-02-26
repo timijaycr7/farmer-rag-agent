@@ -1,4 +1,5 @@
-streamlit
+fastapi
+uvicorn
 langchain>=0.2.2
 langgraph
 langchain-community>=0.2.2

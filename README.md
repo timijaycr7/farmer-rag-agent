@@ -21,17 +21,19 @@ An AI-powered agricultural advisory system that combines retrieval-augmented gen
 
 ## Tech Stack
 
-- **Streamlit** for the web UI
+- **FastAPI** for the web server and API endpoints
 - **LangGraph + LangChain** for tool-augmented generation
 - **FAISS** as the local vector database
 - **HuggingFace Embeddings** for semantic search
 - **Groq LLM** for response generation
+- **Static HTML/CSS/JS** frontend with markdown rendering
 
 ## Project Structure
 
 ```
-app.py                  # Streamlit app
+app.py                  # FastAPI app and API endpoints
 rag_agent.py            # LangGraph RAG pipeline
+static/index.html       # Chat UI
 farmer_vector_db/       # FAISS vector store
 requirements.txt        # Python dependencies
 ```
@@ -55,16 +57,16 @@ GROQ_API_KEY=your_api_key_here
 pip install -r requirements.txt
 ```
 
-3. **Run the app:**
+3. **Run the server:**
 
 ```
-streamlit run app.py
+uvicorn app:app --host 0.0.0.0 --port 8000
 ```
 
 4. **Open the app:**
 
 ```
-http://localhost:8501
+http://localhost:8000
 ```
 
 
