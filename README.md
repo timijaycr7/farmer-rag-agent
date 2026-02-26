@@ -1,5 +1,8 @@
 # Farmer RAG Agent
 
+<img width="803" height="708" alt="image" src="https://github.com/user-attachments/assets/9273bfb6-689f-4daa-af77-666ab99d37b1" />
+
+
 An AI-powered agricultural advisory system that combines retrieval-augmented generation (RAG) with a clean chat UI. It answers farming questions using a local FAISS vector database of agricultural documents and a Groq-hosted LLM, then presents the response in a structured, readable format.
 
 ## What This Project Does
@@ -86,17 +89,6 @@ POST `/ask`
 }
 ```
 
-## Notes on the Vector Database
-
-- The FAISS index is stored in `farmer_vector_db/`.
-- The retrieval step uses semantic similarity to fetch top-k documents.
-- You can rebuild or swap the vector database if you have updated content.
-
-## Troubleshooting
-
-- **App fails to start**: Ensure `GROQ_API_KEY` is set in `.env`.
-- **No answers or errors**: Check that the FAISS index exists in `farmer_vector_db/`.
-- **Frontend not rendering markdown**: Make sure the app is served via FastAPI, not opened directly as a file.
 
 ## License
 
