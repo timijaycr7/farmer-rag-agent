@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Farmer RAG Agent - AI Agricultural Assistant</title>
+    <!-- Markdown Parser -->
+    <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
+    <!-- Sanitize HTML to prevent XSS -->
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.8/dist/purify.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -76,7 +80,7 @@
 
         .message-content {
             display: inline-block;
-            max-width: 70%;
+            max-width: 85%;
             padding: 15px 20px;
             border-radius: 15px;
             word-wrap: break-word;
@@ -94,6 +98,146 @@
             border-bottom-left-radius: 5px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             text-align: left;
+            line-height: 1.6;
+        }
+
+        /* Markdown Styling */
+        .message-content h1,
+        .message-content h2,
+        .message-content h3,
+        .message-content h4 {
+            margin-top: 16px;
+            margin-bottom: 12px;
+            font-weight: 600;
+            line-height: 1.3;
+            color: #2c3e50;
+        }
+
+        .message-content h1 {
+            font-size: 1.5rem;
+            border-bottom: 2px solid #27ae60;
+            padding-bottom: 8px;
+        }
+
+        .message-content h2 {
+            font-size: 1.3rem;
+            color: #27ae60;
+        }
+
+        .message-content h3 {
+            font-size: 1.1rem;
+            color: #16a085;
+        }
+
+        .message-content h4 {
+            font-size: 1rem;
+            color: #2980b9;
+        }
+
+        .message-content p {
+            margin-bottom: 12px;
+            line-height: 1.7;
+        }
+
+        .message-content ul,
+        .message-content ol {
+            margin-left: 20px;
+            margin-bottom: 12px;
+            line-height: 1.7;
+        }
+
+        .message-content li {
+            margin-bottom: 6px;
+        }
+
+        .message-content ul li {
+            list-style-type: disc;
+        }
+
+        .message-content ol li {
+            list-style-type: decimal;
+        }
+
+        .message-content strong {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .message-content em {
+            font-style: italic;
+            color: #34495e;
+        }
+
+        .message-content code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #e74c3c;
+        }
+
+        .message-content pre {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin-bottom: 12px;
+        }
+
+        .message-content pre code {
+            background: transparent;
+            padding: 0;
+            color: #ecf0f1;
+            font-size: 0.9em;
+        }
+
+        .message-content blockquote {
+            border-left: 4px solid #27ae60;
+            padding-left: 15px;
+            margin-left: 0;
+            margin-bottom: 12px;
+            color: #555;
+            font-style: italic;
+        }
+
+        .message-content hr {
+            border: none;
+            border-top: 2px solid #e9ecef;
+            margin: 20px 0;
+        }
+
+        .message-content a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        .message-content a:hover {
+            text-decoration: underline;
+        }
+
+        .message-content table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 12px;
+        }
+
+        .message-content th,
+        .message-content td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .message-content th {
+            background-color: #27ae60;
+            color: white;
+            font-weight: 600;
+        }
+
+        .message-content tr:nth-child(even) {
+            background-color: #f9f9f9;
         }
 
         .input-container {
@@ -301,7 +445,25 @@
             
             const contentDiv = document.createElement('div');
             contentDiv.className = 'message-content';
-            contentDiv.textContent = text;
+            
+            // For bot messages, parse markdown. For user messages, keep plain text
+            if (sender === 'bot') {
+                // Configure marked options for better formatting
+                marked.setOptions({
+                    breaks: true,
+                    gfm: true,
+                    headerIds: false,
+                    mangle: false
+                });
+                
+                // Parse markdown and sanitize HTML
+                const rawHtml = marked.parse(text);
+                const cleanHtml = DOMPurify.sanitize(rawHtml);
+                contentDiv.innerHTML = cleanHtml;
+            } else {
+                // User messages remain as plain text
+                contentDiv.textContent = text;
+            }
             
             messageDiv.appendChild(contentDiv);
             chatContainer.appendChild(messageDiv);
