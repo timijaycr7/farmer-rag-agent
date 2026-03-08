@@ -12,3 +12,21 @@ pytesseract
 pdf2image
 python-dotenv
 pydantic
+pydantic-settings
+
+# Evaluation and Metrics
+ragas>=0.1.0
+langchain-openai
+
+# Logging and Monitoring
+python-json-logger
+structlog
+
+# Data Processing
+pandas
+numpy
+tqdm
+
+# Database and Tracking
+sqlalchemy
+alembic
